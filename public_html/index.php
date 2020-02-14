@@ -38,7 +38,7 @@ try {
     $db->setAsGlobal();
     $db->bootEloquent();
 
-    $db::connection('files')->enableQueryLog();
+    $db::connection(DB_CONNECTION)->enableQueryLog();
 
     $u = new Upload('storage');
     $u->router();
