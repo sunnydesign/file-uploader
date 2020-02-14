@@ -1,0 +1,106 @@
+swagger: "2.0"
+info:
+  description: "This is a simple file uploader."
+  version: "1.0"
+  title: "File uploader"
+  contact:
+    email: "am@kubia.com"
+host: "api.kubia.com"
+basePath: "/v1"
+tags:
+  - name: "upload"
+    description: "File upload"
+schemes:
+  - "https"
+  - "http"
+paths:
+  /upload/link:
+    get:
+      tags:
+        - "upload"
+      summary: "Return link for upload file"
+      description: "Return link for upload file"
+      operationId: "getLink"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "client_id"
+          in: "path"
+          description: "Client ID"
+          required: true
+          type: "integer"
+          format: "int32"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Link"
+        400:
+          description: "Missing parameter `client_id`"
+      security:
+        - api_key: []
+  /upload/{hash}:
+    post:
+      tags:
+        - "upload"
+      summary: "Upload file"
+      description: "Upload file to remote host"
+      operationId: "uploadFile"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "hash"
+          in: "path"
+          description: "Hash"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        400:
+          description: "Bad request"
+        404:
+          description: "Not found"
+      security:
+        - api_key: []
+    get:
+      tags:
+        - "upload"
+      summary: "Return uploaded file"
+      description: "Return uploaded file"
+      operationId: "getFile"
+      produces:
+        - "application/octet-stream"
+      parameters:
+        - name: "hash"
+          in: "path"
+          description: "Hash"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "Successful operation"
+        404:
+          description: "Not found"
+      security:
+        - api_key: []
+
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+definitions:
+  Link:
+    type: "object"
+    properties:
+      url:
+        type: "string"
+  ApiResponse:
+    type: "object"
+    properties:
+      success:
+        type: "boolean"
+        default: true

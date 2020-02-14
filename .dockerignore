@@ -1,0 +1,10 @@
+**/.git
+**/.gitignore
+**/deployment.secrets
+**/.env
+**/config.php
+**/.idea
+**/vendor
+**/README.md
+**/CHANGELOG.md
+**/composer.lock

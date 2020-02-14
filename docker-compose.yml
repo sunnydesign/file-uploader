@@ -1,0 +1,13 @@
+version: '3'
+services:
+  upload:
+    build: .
+    image: docker.quancy.com.sg/upload:${VERSION-latest}
+    container_name: upload
+    network_mode: bridge
+    restart: always
+    volumes:
+      - ./public_html/:/var/www/api.kubia.com/public_html/
+      - ./storage/:/var/www/api.kubia.com/storage/
+    env_file:
+      - .env

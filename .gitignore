@@ -1,0 +1,7 @@
+/vendor
+/composer.lock
+/.idea
+/.env
+/config.php
+/.env
+/storage
