@@ -3,7 +3,7 @@ services:
   upload:
     build: .
     image: docker.quancy.com.sg/file-uploader:${VERSION-latest}
-    container_name: upload
+    container_name: uploader
     network_mode: bridge
     restart: always
     ports:

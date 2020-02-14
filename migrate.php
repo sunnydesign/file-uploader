@@ -42,7 +42,7 @@ function execute($id) {
     try {
         $info = call_user_func($migrations[$id]);
 
-        DB::connection(DB_CONNECTION)->table('migrations')->insertOrIgnore([
+        DB::connection(DB_CONNECTION)->table(DB_SCHEMA . '.migrations')->insertOrIgnore([
             'key' => $id,
             'info' => $info,
             'created_at' => DB::connection(DB_CONNECTION)->raw('now()')
@@ -54,9 +54,9 @@ function execute($id) {
     }
 }
 
-if (!DB::schema(DB_CONNECTION)->hasTable('migrations')) {
+if (!DB::schema(DB_CONNECTION)->hasTable(DB_SCHEMA . '.migrations')) {
     $info = "Таблица миграций";
-    DB::schema(DB_CONNECTION)->create('migrations', function ($table) {
+    DB::schema(DB_CONNECTION)->create(DB_SCHEMA . '.migrations', function ($table) {
         $table->increments('id');
         $table->string('key')->unique();
         $table->string('info');
@@ -73,7 +73,7 @@ if (empty($options['n'])) {
             throw new \Exception("Migrations consists harmful entries, please, run script manually.");
         }
 
-        $migrated = DB::connection(DB_CONNECTION)->table('migrations')->where('key', $key)->get();
+        $migrated = DB::connection(DB_CONNECTION)->table(DB_SCHEMA . '.migrations')->where('key', $key)->get();
 
         if ($migrated->isEmpty()){
             execute($key);
