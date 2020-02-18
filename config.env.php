@@ -9,3 +9,4 @@ define('DB_CONNECTION', getenv('DB_CONNECTION'));
 define('MAX_ALLOWED_SIZE', getenv('MAX_ALLOWED_SIZE'));
 define('ENV_DEV', getenv('ENV_DEV'));
 define('UPLOAD_HOST', getenv('UPLOAD_HOST'));
+define('UPLOAD_DIR', getenv('UPLOAD_DIR'));
