@@ -17,11 +17,22 @@ Return link for upload file
 200: Successful operation     
 ```
 {
-  "url": "string"
+  "url": "http://api.kubia.com/upload/dfb3a0ca53084eded993002903d6c1c602405ba50a130a8ba6f9c3dd291a0ec9"
 }
 ```
-400: Missing parameter `client_id`
+400: Bad request
+```json
+{
+  "errors": [
+    {
+      "code": 101,
+      "message": "Missing parameter ",
+      "field": "client_id"
+    }
+  ]
+}
 
+```
 
 ### [ POST ] ​`/upload/{hash}`
 Upload file to remote host
@@ -33,7 +44,7 @@ Upload file to remote host
 200: Successful operation     
 ```
 {
-  "success": true
+  "uuid": "162a3771-4bff-49ac-88c9-eec91ab99a99"
 }
 ```
 404: Not found

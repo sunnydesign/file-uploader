@@ -1,11 +1,14 @@
-<?php echo DB_DRIVER ?>
+<?php
+$api_url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+echo $api_url;
+?>
 <html>
 <head>
     <title>File Upload</title>
 </head>
 <body>
 <h1>File Upload</h1>
-    <form method="POST" action="http://172.17.0.2:8000/cea13dab5163126ab721a994aa63c4c6ffa477214e7408de6828fee723933a11" enctype="multipart/form-data">
+    <form method="POST" action="<?= $api_url ?>/dfb3a0ca53084eded993002903d6c1c602405ba50a130a8ba6f9c3dd291a0ec9" enctype="multipart/form-data">
         <label for="inputfile">Upload File</label>
         <input type="file" id="inputfile" name="inputfile">
         </br>

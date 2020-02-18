@@ -2,6 +2,7 @@
 
 namespace Kubia\Upload;
 
+use Kubia\Upload\ApiRequestException;
 use Symfony\Component\VarDumper\VarDumper;
 use Illuminate\Http\Request;
 use Kubia\Upload\File;
@@ -9,7 +10,6 @@ use Kubia\Upload\ApiRequest400Exception;
 use Kubia\Upload\ApiRequest404Exception;
 use Kubia\Upload\ApiRequest405Exception;
 use Kubia\Upload\ApiRequest500Exception;
-use Kubia\Upload\ApiRequestException;
 
 class Upload
 {
@@ -18,113 +18,27 @@ class Upload
     public $method;
     public $allowed_size = MAX_ALLOWED_SIZE;
     public $allowed_types = [
-        // Image formats
-        'jpg|jpeg|jpe'                 => 'image/jpeg',
-        'gif'                          => 'image/gif',
-        'png'                          => 'image/png',
-        'bmp'                          => 'image/bmp',
-        'tif|tiff'                     => 'image/tiff',
-        'ico'                          => 'image/x-icon',
-
-        // Video formats
-        'asf|asx'                      => 'video/x-ms-asf',
-        'wmv'                          => 'video/x-ms-wmv',
-        'wmx'                          => 'video/x-ms-wmx',
-        'wm'                           => 'video/x-ms-wm',
-        'avi'                          => 'video/avi',
-        'divx'                         => 'video/divx',
-        'flv'                          => 'video/x-flv',
-        'mov|qt'                       => 'video/quicktime',
-        'mpeg|mpg|mpe'                 => 'video/mpeg',
-        'mp4|m4v'                      => 'video/mp4',
-        'ogv'                          => 'video/ogg',
-        'webm'                         => 'video/webm',
-        'mkv'                          => 'video/x-matroska',
-
-        // Text formats
-        'txt|asc|c|cc|h'               => 'text/plain',
-        'csv'                          => 'text/csv',
-        'tsv'                          => 'text/tab-separated-values',
-        'ics'                          => 'text/calendar',
-        'rtx'                          => 'text/richtext',
-        'css'                          => 'text/css',
-        'htm|html'                     => 'text/html',
-
-        // Audio formats
-        'mp3|m4a|m4b'                  => 'audio/mpeg',
-        'ra|ram'                       => 'audio/x-realaudio',
-        'wav'                          => 'audio/wav',
-        'ogg|oga'                      => 'audio/ogg',
-        'mid|midi'                     => 'audio/midi',
-        'wma'                          => 'audio/x-ms-wma',
-        'wax'                          => 'audio/x-ms-wax',
-        'mka'                          => 'audio/x-matroska',
-
-        // Misc application formats
-        'rtf'                          => 'application/rtf',
-        'js'                           => 'application/javascript',
-        'pdf'                          => 'application/pdf',
-        'swf'                          => 'application/x-shockwave-flash',
-        'class'                        => 'application/java',
-        'tar'                          => 'application/x-tar',
-        'zip'                          => 'application/zip',
-        'gz|gzip'                      => 'application/x-gzip',
-        'rar'                          => 'application/rar',
-        '7z'                           => 'application/x-7z-compressed',
-        'exe'                          => 'application/x-msdownload',
-
-        // MS Office formats
-        'doc'                          => 'application/msword',
-        'pot|pps|ppt'                  => 'application/vnd.ms-powerpoint',
-        'wri'                          => 'application/vnd.ms-write',
-        'xla|xls|xlt|xlw'              => 'application/vnd.ms-excel',
-        'mdb'                          => 'application/vnd.ms-access',
-        'mpp'                          => 'application/vnd.ms-project',
-        'docx'                         => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'docm'                         => 'application/vnd.ms-word.document.macroEnabled.12',
-        'dotx'                         => 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
-        'dotm'                         => 'application/vnd.ms-word.template.macroEnabled.12',
-        'xlsx'                         => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'xlsm'                         => 'application/vnd.ms-excel.sheet.macroEnabled.12',
-        'xlsb'                         => 'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
-        'xltx'                         => 'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
-        'xltm'                         => 'application/vnd.ms-excel.template.macroEnabled.12',
-        'xlam'                         => 'application/vnd.ms-excel.addin.macroEnabled.12',
-        'pptx'                         => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        'pptm'                         => 'application/vnd.ms-powerpoint.presentation.macroEnabled.12',
-        'ppsx'                         => 'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
-        'ppsm'                         => 'application/vnd.ms-powerpoint.slideshow.macroEnabled.12',
-        'potx'                         => 'application/vnd.openxmlformats-officedocument.presentationml.template',
-        'potm'                         => 'application/vnd.ms-powerpoint.template.macroEnabled.12',
-        'ppam'                         => 'application/vnd.ms-powerpoint.addin.macroEnabled.12',
-        'sldx'                         => 'application/vnd.openxmlformats-officedocument.presentationml.slide',
-        'sldm'                         => 'application/vnd.ms-powerpoint.slide.macroEnabled.12',
-        'onetoc|onetoc2|onetmp|onepkg' => 'application/onenote',
-
-        // OpenOffice formats
-        'odt'                          => 'application/vnd.oasis.opendocument.text',
-        'odp'                          => 'application/vnd.oasis.opendocument.presentation',
-        'ods'                          => 'application/vnd.oasis.opendocument.spreadsheet',
-        'odg'                          => 'application/vnd.oasis.opendocument.graphics',
-        'odc'                          => 'application/vnd.oasis.opendocument.chart',
-        'odb'                          => 'application/vnd.oasis.opendocument.database',
-        'odf'                          => 'application/vnd.oasis.opendocument.formula',
-
-        // WordPerfect formats
-        'wp|wpd'                       => 'application/wordperfect',
-
-        // iWork formats
-        'key'                          => 'application/vnd.apple.keynote',
-        'numbers'                      => 'application/vnd.apple.numbers',
-        'pages'                        => 'application/vnd.apple.pages',
+        'jpg|jpeg|jpe'     => 'image/jpeg',
+        'gif'              => 'image/gif',
+        'png'              => 'image/png',
+        'bmp'              => 'image/bmp',
+        'tif|tiff'         => 'image/tiff',
+        'pdf'              => 'application/pdf',
+        'txt|asc|c|cc|h'   => 'text/plain',
+        'rtf'              => 'application/rtf',
+        'doc'              => 'application/msword',
+        'docx'             => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'xla|xls|xlt|xlw'  => 'application/vnd.ms-excel',
+        'xlsx'             => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'odt'              => 'application/vnd.oasis.opendocument.text',
+        'ods'              => 'application/vnd.oasis.opendocument.spreadsheet'
     ];
 
     public function __construct($storage)
     {
         $this->api_url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
         $this->method = $_SERVER['REQUEST_METHOD'];
-
-        $this->storage = realpath(BASE_DIR . '/' . $storage);
+        $this->storage = realpath(BASE_DIR . '/../' . $storage);
     }
 
     /**
@@ -136,8 +50,14 @@ class Upload
 
         $client_id = $_GET['client_id'] ?? null;
 
-        if(!$client_id)
-            throw new ApiRequest400Exception('Missing parameter `client_id`');
+        if(!$client_id) {
+            $error = [
+                'code' => 101,
+                'message' => 'Missing parameter',
+                'field' => 'client_id'
+            ];
+            throw new ApiRequest400Exception(json_encode($error));
+        }
 
         // create record in DB
         $file = new File();
@@ -195,11 +115,20 @@ class Upload
                 $this->validation($uploaded_file);
 
                 try {
-                    $destination_dir = $this->storage . '/' . $hash;
-                    $destination_file = $destination_dir . '/' . $uploaded_file['name'];
+                    $first_dir_name = mb_substr($hash, 0, 3);
+                    $second_dir_name = mb_substr($hash, 3, 3);
+                    $filename = mb_substr($hash, 6);
+
+                    $first_dir_path = $this->storage . '/' . $first_dir_name;
+                    $second_dir_path = $first_dir_path . '/' . $second_dir_name;
+                    $destination_file = $second_dir_path . '/' . $filename;
 
                     // save file into storage
-                    mkdir($destination_dir);
+                    if (!file_exists($first_dir_path))
+                        mkdir($first_dir_path);
+                    if (!file_exists($second_dir_path))
+                        mkdir($second_dir_path);
+
                     move_uploaded_file($uploaded_file['tmp_name'], $destination_file);
 
                     // save into DB
@@ -209,7 +138,9 @@ class Upload
                     $file->name = $uploaded_file['name'];
                     $file->save();
 
-                    $response = ['success' => true];
+                    $response = [
+                        'uuid' => $file->uuid
+                    ];
                     $this->response($response);
                 } catch (\Throwable $e) {
                     throw new ApiRequest500Exception($e->getMessage(), $e->getCode());
@@ -260,9 +191,29 @@ class Upload
                 else
                     throw new ApiRequest405Exception();
             }
+        } catch(ApiRequest400Exception $e) {
+            $this->error400($e);
         } catch(ApiRequestException $e) {
             $this->error($e);
         }
+    }
+
+    /**
+     * Error 400 response
+     *
+     * @param ApiRequest400Exception $e
+     */
+    public function error400(ApiRequest400Exception $e): void
+    {
+        http_response_code($e->getCode());
+
+        $response = [
+            'error' => [
+                json_decode($e->getMessage())
+            ]
+        ];
+
+        $this->response($response);
     }
 
     /**
@@ -273,24 +224,19 @@ class Upload
     public function error(ApiRequestException $e): void
     {
         http_response_code($e->getCode());
-        $response = [
-            'error' => [
-                'code' => $e->getCode(),
-                'message' => $e->getMessage(),
-            ]
-        ];
-        $this->response($response);
+        $this->response();
     }
 
     /**
      * Response in json
      *
-     * @param array $response
+     * @param array|null $response
      */
-    public function response(array $response): void
+    public function response(?array $response): void
     {
         header('Content-Type: application/json');
-        echo json_encode($response);
+        if($response)
+            echo json_encode($response);
     }
 
     /**

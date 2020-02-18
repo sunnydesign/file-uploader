@@ -9,7 +9,7 @@ services:
     ports:
       - 9080:80
     volumes:
-#      - ./public_html/:/var/www/api.kubia.com/public_html/
+      - ./public_html/:/var/www/api.kubia.com/public_html/
       - ./storage/:/var/www/api.kubia.com/storage/
     env_file:
       - .env

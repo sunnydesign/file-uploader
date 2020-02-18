@@ -20,12 +20,11 @@ paths:
         - "upload"
       summary: "Return link for upload file"
       description: "Return link for upload file"
-      operationId: "getLink"
       produces:
         - "application/json"
       parameters:
         - name: "client_id"
-          in: "path"
+          in: "query"
           description: "Client ID"
           required: true
           type: "integer"
@@ -36,16 +35,15 @@ paths:
           schema:
             $ref: "#/definitions/Link"
         400:
-          description: "Missing parameter `client_id`"
-      security:
-        - api_key: []
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/ApiError400Response"
   /upload/{hash}:
     post:
       tags:
         - "upload"
       summary: "Upload file"
       description: "Upload file to remote host"
-      operationId: "uploadFile"
       produces:
         - "application/json"
       parameters:
@@ -58,19 +56,16 @@ paths:
         200:
           description: "Successful operation"
           schema:
-            $ref: "#/definitions/ApiResponse"
+            $ref: "#/definitions/File"
         400:
           description: "Bad request"
         404:
           description: "Not found"
-      security:
-        - api_key: []
     get:
       tags:
         - "upload"
       summary: "Return uploaded file"
       description: "Return uploaded file"
-      operationId: "getFile"
       produces:
         - "application/octet-stream"
       parameters:
@@ -82,25 +77,37 @@ paths:
       responses:
         200:
           description: "Successful operation"
+          schema:
+            type: "file"
         404:
           description: "Not found"
-      security:
-        - api_key: []
 
-securityDefinitions:
-  api_key:
-    type: "apiKey"
-    name: "api_key"
-    in: "header"
 definitions:
   Link:
     type: "object"
     properties:
       url:
         type: "string"
-  ApiResponse:
+    example:
+      url: "http://api.kubia.com/upload/dfb3a0ca53084eded993002903d6c1c602405ba50a130a8ba6f9c3dd291a0ec9"
+  File:
     type: "object"
     properties:
-      success:
-        type: "boolean"
-        default: true
+      uuid:
+        type: "string"
+    example:
+      uuid: "162a3771-4bff-49ac-88c9-eec91ab99a99"
+  ApiError400Response:
+    type: "object"
+    properties:
+      errors:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            code:
+              type: "integer"
+            message:
+              type: "string"
+            field:
+              type: "string"
