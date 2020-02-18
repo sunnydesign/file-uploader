@@ -2,10 +2,8 @@
 
 namespace Kubia\Upload;
 
-use Kubia\Logger\Logger;
 use Kubia\Upload\ApiRequestException;
 use Symfony\Component\VarDumper\VarDumper;
-use Illuminate\Http\Request;
 use Kubia\Upload\File;
 use Kubia\Upload\ApiRequest400Exception;
 use Kubia\Upload\ApiRequest404Exception;
@@ -238,7 +236,6 @@ class Upload
      */
     public function error(ApiRequestException $e): void
     {
-     //   Logger::stdout($e->getMessage(), '','', 'uploader', 1);
         http_response_code($e->getCode());
         $this->response();
     }
