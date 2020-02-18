@@ -15,6 +15,5 @@ File uploader
 - Added method [ POST ] `​/upload/{hash}`
 - Added method [ GET ] `​/upload/{hash}`
 
-
 [unreleased]: https://gitlab.com/kubia/upload/-/tags/1.0
 [1.0]: https://gitlab.com/kubia/upload/-/tags/1.0
