@@ -37,13 +37,13 @@ try {
     $db->setEventDispatcher(new Dispatcher(new Container()));
     $db->setAsGlobal();
     $db->bootEloquent();
-
-    $db::connection(DB_CONNECTION)->enableQueryLog();
+    if(ENV_DEV === true)
+        $db::connection(DB_CONNECTION)->enableQueryLog();
 
     $u = new Upload('storage');
     $u->router();
 
 } catch (\Throwable $e) {
     if(ENV_DEV === true)
-        dd($e);
+          dd($e);
 }
