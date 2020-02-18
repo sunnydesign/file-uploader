@@ -238,7 +238,7 @@ class Upload
      */
     public function error(ApiRequestException $e): void
     {
-        Logger::stdout($e->getMessage(), '','', 'uploader', 1);
+     //   Logger::stdout($e->getMessage(), '','', 'uploader', 1);
         http_response_code($e->getCode());
         $this->response();
     }
