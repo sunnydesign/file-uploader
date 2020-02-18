@@ -2,6 +2,7 @@
 
 namespace Kubia\Upload;
 
+use Kubia\Logger\Logger;
 use Kubia\Upload\ApiRequestException;
 use Symfony\Component\VarDumper\VarDumper;
 use Illuminate\Http\Request;
@@ -146,7 +147,11 @@ class Upload
                     throw new ApiRequest500Exception($e->getMessage(), $e->getCode());
                 }
             } else {
-                throw new ApiRequest400Exception('No file uploaded');
+                $error = [
+                    'code' => 999,
+                    'message' => 'No file uploaded'
+                ];
+                throw new ApiRequest400Exception(json_encode($error));
             }
         }
     }
@@ -159,11 +164,21 @@ class Upload
      */
     public function validation(array $uploaded_file): void
     {
-        if(!in_array($uploaded_file['type'], $this->allowed_types))
-            throw new ApiRequest400Exception('Bad format file');
+        if(!in_array($uploaded_file['type'], $this->allowed_types)) {
+            $error = [
+                'code' => 101,
+                'message' => 'Bad format file'
+            ];
+            throw new ApiRequest400Exception(json_encode($error));
+        }
 
-        if($uploaded_file['size'] > $this->allowed_size)
-            throw new ApiRequest400Exception('File too large');
+        if($uploaded_file['size'] > $this->allowed_size) {
+            $error = [
+                'code' => 102,
+                'message' => 'File too large'
+            ];
+            throw new ApiRequest400Exception(json_encode($error));
+        }
     }
 
     /**
@@ -223,6 +238,7 @@ class Upload
      */
     public function error(ApiRequestException $e): void
     {
+        Logger::stdout($e->getMessage(), '','', 'uploader', 1);
         http_response_code($e->getCode());
         $this->response();
     }
