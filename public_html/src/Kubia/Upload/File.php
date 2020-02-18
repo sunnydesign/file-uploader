@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class File extends Model
 {
-    protected $fillable = ['uuid', 'client_id', 'name', 'path', 'hash', 'mime', 'size'];
+    protected $fillable = ['uuid', 'client_uuid', 'name', 'path', 'hash', 'mime', 'size'];
     protected $guarded = ['id'];
     protected $dateFormat = 'Y-m-d H:i:sP';
     protected $connection = 'uploader';

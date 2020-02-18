@@ -33,11 +33,11 @@ class Upload
         'ods'              => 'application/vnd.oasis.opendocument.spreadsheet'
     ];
 
-    public function __construct($storage)
+    public function __construct()
     {
-        $this->api_url = UPLOAD_HOST; //$_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+        $this->api_url = UPLOAD_HOST;
         $this->method = $_SERVER['REQUEST_METHOD'];
-        $this->storage = realpath(BASE_DIR . '/../' . $storage);
+        $this->storage = UPLOAD_DIR;
     }
 
     /**
@@ -47,20 +47,20 @@ class Upload
     {
         $this->checkMethod(['GET']);
 
-        $client_id = $_GET['client_id'] ?? null;
+        $client_uuid = $_GET['client_uuid'] ?? null;
 
-        if(!$client_id) {
+        if(!$client_uuid) {
             $error = [
                 'code' => 101,
                 'message' => 'Missing parameter',
-                'field' => 'client_id'
+                'field' => 'client_uuid'
             ];
             throw new ApiRequest400Exception(json_encode($error));
         }
 
         // create record in DB
         $file = new File();
-        $file->client_id = $client_id;
+        $file->client_uuid = $client_uuid;
         $file->save();
 
         // set response
@@ -104,8 +104,13 @@ class Upload
         if(!$file || $file->path !== null)
             throw new ApiRequest404Exception();
 
-        if(!isset($_FILES) || empty($_FILES))
-            throw new ApiRequest400Exception();
+        if(!isset($_FILES) || empty($_FILES)) {
+            $error = [
+                'code' => 999,
+                'message' => 'No file uploaded'
+            ];
+            throw new ApiRequest400Exception(json_encode($error));
+        }
 
         // upload files
         foreach ($_FILES as $key => $uploaded_file) {

@@ -8,7 +8,7 @@ echo $api_url;
 </head>
 <body>
 <h1>File Upload</h1>
-    <form method="POST" action="<?= $api_url ?>/dfb3a0ca53084eded993002903d6c1c602405ba50a130a8ba6f9c3dd291a0ec9" enctype="multipart/form-data">
+    <form method="POST" action="<?= $api_url ?>/0b24e362028471c7f6d3dfad7ee9f17ccafb6e6ba9f44a9a822cc6a6abd1a918" enctype="multipart/form-data">
         <label for="inputfile">Upload File</label>
         <input type="file" id="inputfile" name="inputfile">
         </br>

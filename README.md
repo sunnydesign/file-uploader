@@ -10,7 +10,7 @@ This is a simple file uploader for implementation requests Kubia API.
 Return link for upload file
 
 #### Parameters:
-- integer `client_id`
+- integer `client_uuid`
 
 #### Responses:
 200: OK     
@@ -26,7 +26,7 @@ Return link for upload file
     {
       "code": 101,
       "message": "Missing parameter",
-      "field": "client_id"
+      "field": "client_uuid"
     }
   ]
 }

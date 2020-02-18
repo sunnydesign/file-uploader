@@ -8,8 +8,8 @@ $migrations['20200211'] = function () {
     // templates schema
     DB::schema(DB_CONNECTION)->create('files', function ($table) {
         $table->increments('id');
-        $table->uuid('uuid');
-        $table->integer('client_id')->nullable();
+        $table->uuid('uuid')->index();
+        $table->uuid('client_uuid');
         $table->text('name')->nullable();
         $table->text('path')->nullable();
         $table->string('hash');

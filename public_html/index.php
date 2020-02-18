@@ -39,8 +39,12 @@ try {
     $db->bootEloquent();
     if(ENV_DEV === true)
         $db::connection(DB_CONNECTION)->enableQueryLog();
+    
+    // Make storage dir
+    if (!file_exists(UPLOAD_DIR))
+        mkdir(UPLOAD_DIR, 0777);
 
-    $u = new Upload('storage');
+    $u = new Upload();
     $u->router();
 
 } catch (\Throwable $e) {

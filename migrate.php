@@ -32,7 +32,6 @@ $db->addConnection([
 $db->setEventDispatcher(new Dispatcher(new Container()));
 $db->setAsGlobal();
 $db->bootEloquent();
-$db::connection(DB_CONNECTION)->enableQueryLog();
 
 include __DIR__ . '/migrations.php';
 

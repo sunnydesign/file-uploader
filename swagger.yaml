@@ -19,9 +19,9 @@ paths:
       summary: Return link for upload file
       description: Return link for upload file
       parameters:
-        - name: client_id
+        - name: client_uuid
           in: query
-          description: Client ID
+          description: Client UUID
           required: true
           schema:
             type: integer
@@ -127,7 +127,7 @@ components:
         errors:
           - code: 101
             message: 'Missing parameter'
-            field: client_id
+            field: client_uuid
     UploadError400:
       type: object
       properties:
