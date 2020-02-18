@@ -37,7 +37,7 @@ class Upload
 
     public function __construct($storage)
     {
-        $this->api_url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+        $this->api_url = UPLOAD_HOST; //$_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
         $this->method = $_SERVER['REQUEST_METHOD'];
         $this->storage = realpath(BASE_DIR . '/../' . $storage);
     }
