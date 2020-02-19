@@ -8,3 +8,5 @@
 **/README.md
 **/CHANGELOG.md
 **/composer.lock
+**/tests
+**/tests/testfile.ext

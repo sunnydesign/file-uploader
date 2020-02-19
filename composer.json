@@ -17,10 +17,10 @@
     }
   ],
   "require": {
+    "ext-json": "*",
     "illuminate/database": "^5.4",
     "illuminate/events": "^5.4",
-    "ramsey/uuid": "^3.9",
-    "guzzlehttp/guzzle": "~6.0"
+    "ramsey/uuid": "^3.9"
   },
   "require-dev": {
     "symfony/var-dumper": "^5.0"

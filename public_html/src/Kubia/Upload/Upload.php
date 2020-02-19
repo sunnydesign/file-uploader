@@ -6,6 +6,7 @@ use Kubia\Upload\ApiRequestException;
 use Symfony\Component\VarDumper\VarDumper;
 use Kubia\Upload\File;
 use Kubia\Upload\ApiRequest400Exception;
+use Kubia\Upload\ApiRequest403Exception;
 use Kubia\Upload\ApiRequest404Exception;
 use Kubia\Upload\ApiRequest405Exception;
 use Kubia\Upload\ApiRequest500Exception;
@@ -33,21 +34,31 @@ class Upload
         'ods'              => 'application/vnd.oasis.opendocument.spreadsheet'
     ];
 
-    public function __construct()
+    /**
+     * Upload constructor
+     *
+     * @param array $settings
+     */
+    public function __construct(array $settings = [])
     {
         $this->api_url = UPLOAD_HOST;
         $this->method = $_SERVER['REQUEST_METHOD'];
         $this->storage = UPLOAD_DIR;
+        if(isset($settings['allowed_types']) && is_array($settings['allowed_types']))
+            $this->allowed_types = $settings['allowed_types'];
     }
 
     /**
      *  Get link for upload file
+     *
+     * @throws ApiRequest400Exception
+     * @throws ApiRequest405Exception
      */
     function getLink(): void
     {
         $this->checkMethod(['GET']);
 
-        $client_uuid = $_GET['client_uuid'] ?? null;
+        $client_uuid = $_SERVER['HTTP_X_USER_UUID'] ?? null;
 
         if(!$client_uuid) {
             $error = [
@@ -72,6 +83,7 @@ class Upload
      * Get uploaded file
      *
      * @param string $hash
+     * @throws ApiRequest403Exception
      * @throws ApiRequest404Exception
      */
     function getFile(string $hash): void
@@ -80,6 +92,11 @@ class Upload
 
         if(!$file || $file->path === null || !is_file($file->path))
             throw new ApiRequest404Exception();
+
+        $client_uuid = $_SERVER['HTTP_X_USER_UUID'] ?? null;
+
+        if($client_uuid && $client_uuid !== $file->client_uuid)
+            throw new ApiRequest403Exception();
 
         // return uploaded file
         header('Content-Description: File Transfer');
@@ -94,6 +111,7 @@ class Upload
      *
      * @param string $hash
      * @throws ApiRequest400Exception
+     * @throws ApiRequest403Exception
      * @throws ApiRequest404Exception
      * @throws ApiRequest500Exception
      */
@@ -112,6 +130,11 @@ class Upload
             throw new ApiRequest400Exception(json_encode($error));
         }
 
+        $client_uuid = $_SERVER['HTTP_X_USER_UUID'] ?? null;
+
+        if($client_uuid && $client_uuid !== $file->client_uuid)
+            throw new ApiRequest403Exception();
+
         // upload files
         foreach ($_FILES as $key => $uploaded_file) {
             if ($uploaded_file['error'] == 0) {
@@ -119,33 +142,29 @@ class Upload
                 $this->validation($uploaded_file);
 
                 try {
-                    $first_dir_name = mb_substr($hash, 0, 3);
-                    $second_dir_name = mb_substr($hash, 3, 3);
-                    $filename = mb_substr($hash, 6);
-
-                    $first_dir_path = $this->storage . '/' . $first_dir_name;
-                    $second_dir_path = $first_dir_path . '/' . $second_dir_name;
-                    $destination_file = $second_dir_path . '/' . $filename;
+                    $destination_path = $this->getDestinationPath($hash);
 
                     // save file into storage
-                    if (!file_exists($first_dir_path))
-                        mkdir($first_dir_path);
-                    if (!file_exists($second_dir_path))
-                        mkdir($second_dir_path);
-
-                    move_uploaded_file($uploaded_file['tmp_name'], $destination_file);
+                    move_uploaded_file($uploaded_file['tmp_name'], $destination_path);
 
                     // save into DB
-                    $file->path = $destination_file;
+                    $file->path = $destination_path;
                     $file->mime = $uploaded_file['type'];
                     $file->size = $uploaded_file['size'];
                     $file->name = $uploaded_file['name'];
-                    $file->save();
 
-                    $response = [
-                        'uuid' => $file->uuid
-                    ];
-                    $this->response($response);
+                    if($file->save()) {
+                        $response = [
+                            'uuid' => $file->uuid
+                        ];
+                        $this->response($response);
+                    } else {
+                        $error = [
+                            'code' => 998,
+                            'message' => 'File not saved'
+                        ];
+                        throw new ApiRequest400Exception(json_encode($error));
+                    }
                 } catch (\Throwable $e) {
                     throw new ApiRequest500Exception($e->getMessage(), $e->getCode());
                 }
@@ -157,6 +176,30 @@ class Upload
                 throw new ApiRequest400Exception(json_encode($error));
             }
         }
+    }
+
+    /**
+     * Get destination path to save file
+     *
+     * @param string $hash
+     * @return string
+     */
+    public function getDestinationPath(string $hash): string
+    {
+        $first_dir_name = mb_substr($hash, 0, 3);
+        $second_dir_name = mb_substr($hash, 3, 3);
+        $filename = mb_substr($hash, 6);
+
+        $first_dir_path = $this->storage . '/' . $first_dir_name;
+        $second_dir_path = $first_dir_path . '/' . $second_dir_name;
+        $destination_path = $second_dir_path . '/' . $filename;
+
+        if (!file_exists($first_dir_path))
+            mkdir($first_dir_path);
+        if (!file_exists($second_dir_path))
+            mkdir($second_dir_path);
+
+        return $destination_path;
     }
 
     /**
@@ -186,9 +229,6 @@ class Upload
 
     /**
      * Parsing uri and routing
-     *
-     * @throws ApiRequest404Exception
-     * @throws ApiRequest405Exception
      */
     function router(): void
     {

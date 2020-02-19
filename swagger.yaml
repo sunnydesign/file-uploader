@@ -19,13 +19,13 @@ paths:
       summary: Return link for upload file
       description: Return link for upload file
       parameters:
-        - name: client_uuid
-          in: query
+        - name: X-USER-UUID
+          in: header
           description: Client UUID
           required: true
           schema:
-            type: integer
-            format: int32
+            type: string
+            format: uuid
       security:
         - bearer: []
       responses:

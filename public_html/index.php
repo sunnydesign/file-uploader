@@ -18,8 +18,6 @@ if (is_file($config)) {
     require_once $config_env;
 }
 
-defined('BASE_DIR') or define('BASE_DIR', __DIR__);
-
 try {
     // DB connection init
     $db = new DB();
@@ -42,12 +40,33 @@ try {
     
     // Make storage dir
     if (!file_exists(UPLOAD_DIR))
-        mkdir(UPLOAD_DIR, 0777);
+        mkdir(UPLOAD_DIR);
 
-    $u = new Upload();
+    // Set allowed file types to upload
+    $settings = [
+        'allowed_types' => [
+            'jpg|jpeg|jpe'     => 'image/jpeg',
+            'gif'              => 'image/gif',
+            'png'              => 'image/png',
+            'bmp'              => 'image/bmp',
+            'tif|tiff'         => 'image/tiff',
+            'pdf'              => 'application/pdf',
+            'txt|asc|c|cc|h'   => 'text/plain',
+            'rtf'              => 'application/rtf',
+            'doc'              => 'application/msword',
+            'docx'             => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'xla|xls|xlt|xlw'  => 'application/vnd.ms-excel',
+            'xlsx'             => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'odt'              => 'application/vnd.oasis.opendocument.text',
+            'ods'              => 'application/vnd.oasis.opendocument.spreadsheet'
+        ]
+    ];
+
+    $u = new Upload($settings);
     $u->router();
 
 } catch (\Throwable $e) {
+    // Set ENV_DEV as TRUE in DEVELOPMENT mode only
     if(ENV_DEV === true)
           dd($e);
 }
