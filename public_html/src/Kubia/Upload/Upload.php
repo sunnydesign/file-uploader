@@ -64,7 +64,7 @@ class Upload
             $error = [
                 'code' => 101,
                 'message' => 'Missing parameter',
-                'field' => 'client_uuid'
+                'field' => 'X-USER-UUID'
             ];
             throw new ApiRequest400Exception(json_encode($error));
         }

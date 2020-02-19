@@ -6,19 +6,21 @@ This is a simple file uploader for implementation requests Kubia API.
 
 ## Available method
 
-### [ GET ] `​/upload​/link` (secure)
+### [ GET ] `​/upload​/link`
 Return link for upload file
 
 #### Parameters:
-- integer `client_uuid`
+- integer `X-USER-UUID` (header)
 
 #### Responses:
-200: OK     
+200: OK
 ```
 {
   "url": "http://api.kubia.com/upload/dfb3a0ca53084eded993002903d6c1c602405ba50a130a8ba6f9c3dd291a0ec9"
 }
 ```
+403: Forbiden
+
 400: Bad request
 ```json
 {
@@ -26,7 +28,7 @@ Return link for upload file
     {
       "code": 101,
       "message": "Missing parameter",
-      "field": "client_uuid"
+      "field": "X-USER-UUID"
     }
   ]
 }
@@ -39,7 +41,7 @@ Upload file to remote host
 - string `hash`
 
 #### Responses:
-200: OK     
+200: OK
 ```
 {
   "uuid": "162a3771-4bff-49ac-88c9-eec91ab99a99"
@@ -47,16 +49,6 @@ Upload file to remote host
 ```
 
 400: Bad request
-```json
-{
-  "errors": [
-    {
-      "code": 100,
-      "message": "No file uploaded"
-    }
-  ]
-}
-```
 ```json
 {
   "errors": [
@@ -77,6 +69,26 @@ Upload file to remote host
   ]
 }
 ```
+```json
+{
+  "errors": [
+    {
+      "code": 998,
+      "message": "File not saved"
+    }
+  ]
+}
+```
+```json
+{
+  "errors": [
+    {
+      "code": 999,
+      "message": "No file uploaded"
+    }
+  ]
+}
+```
 
 404: Not found
 
@@ -87,6 +99,6 @@ Return uploaded file
 - string `hash`
 
 #### Responses:
-200: OK    
+200: OK
 
 404: Not found

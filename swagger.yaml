@@ -54,6 +54,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: X-USER-UUID
+          in: header
+          description: Client UUID
+          schema:
+            type: string
+            format: uuid
       security:
         - bearer: []
       responses:
@@ -64,6 +70,8 @@ paths:
               schema:
                 type: string
                 format: binary
+        403:
+          description: Forbiden
         404:
           description: Not found
     post:
@@ -146,6 +154,8 @@ components:
             message: 'Bad format file'
           - code: 102
             message: 'File too large'
+          - code: 998
+            message: 'File not saved'
           - code: 999
             message: 'No file uploaded'
   securitySchemes:
