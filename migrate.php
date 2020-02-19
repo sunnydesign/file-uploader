@@ -53,7 +53,7 @@ function execute($id) {
     }
 }
 
-if (!DB::schema(DB_CONNECTION)->hasTable(DB_SCHEMA . '.migrations')) {
+if (!DB::schema(DB_CONNECTION)->hasTable('migrations')) {
     $info = "Таблица миграций";
     DB::schema(DB_CONNECTION)->create(DB_SCHEMA . '.migrations', function ($table) {
         $table->increments('id');
